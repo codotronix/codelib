@@ -14,4 +14,4 @@ A CDN like facility to provide links for all the js and css codes written by me.
 
 ## barix
 
-`http://codotronix.github.io/codelib/barix/v1.0.1/barix.js`
+`http://codotronix.github.io/codelib/barix/v1.0.1/barix.min.js`
