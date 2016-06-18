@@ -3,6 +3,7 @@
  * Copyright 2016 Suman Barick
  * Licensed under the MIT license
  */
+"use strict";
 var Barix = (function () {
     /**********************************************************
      * constructor
@@ -18,7 +19,16 @@ var Barix = (function () {
         var elems = new Array();
         //if bx(function(){}) is used as document ready
         if (selector && typeof (selector) == "function") {
-            window.onload = function () { selector(); };
+            Barix.prototype["onReadyFnQueue"] = Barix.prototype["onReadyFnQueue"] || [];
+            Barix.prototype["onReadyFnQueue"].push(selector);
+            window.onload = function () {
+                //execute all the doc ready function one by one
+                for (var i in Barix.prototype["onReadyFnQueue"]) {
+                    Barix.prototype["onReadyFnQueue"][i]();
+                }
+                //once done calling all, delete them to freeup memory
+                delete Barix.prototype["onReadyFnQueue"];
+            };
         }
         else if (selector && typeof (selector) == "string") {
             var elemList = document.querySelectorAll(selector);
@@ -36,7 +46,32 @@ var Barix = (function () {
     };
     ///////////////////////////////////////////////////////////
     /**********************************************************
-     * addClass
+     * .attr('attrName', 'attrValue')
+     *********************************************************/
+    Barix.prototype.attr = function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i - 0] = arguments[_i];
+        }
+        var attrName;
+        var attrValue;
+        //if it is get
+        if (args.length == 1) {
+            attrName = args[0];
+            return this.elems[0].getAttribute(attrName);
+        }
+        else if (args.length == 2) {
+            attrName = args[0];
+            attrValue = args[1];
+            for (var i in this.elems) {
+                this.elems[i].setAttribute(attrName, attrValue);
+            }
+            return this;
+        }
+    };
+    ///////////////////////////////////////////////////////////
+    /**********************************************************
+     * addClass("class1 class2")
      *********************************************************/
     Barix.prototype.addClass = function (classNames) {
         var classes = (classNames || "").trim();
