@@ -1,3 +1,8 @@
+/*!
+ * Barix (https://github.com/codotronix/Barix)
+ * Copyright 2016 Suman Barick
+ * Licensed under the MIT license
+ */
 var Barix = (function () {
     /**********************************************************
      * constructor
@@ -198,6 +203,7 @@ var Barix = (function () {
         for (var i in this.elems) {
             this.elems[0].textContent = textContent;
         }
+        return this;
     };
     ////////////////////////////////////////////////////////////
     /***********************************************************
@@ -207,6 +213,7 @@ var Barix = (function () {
         for (var i in this.elems) {
             this.elems[0].textContent += textContent;
         }
+        return this;
     };
     ////////////////////////////////////////////////////////////
     /***********************************************************
@@ -216,6 +223,7 @@ var Barix = (function () {
         for (var i in this.elems) {
             this.elems[0].innerHTML = htmlContent;
         }
+        return this;
     };
     ////////////////////////////////////////////////////////////
     /***********************************************************
@@ -225,6 +233,7 @@ var Barix = (function () {
         for (var i in this.elems) {
             this.elems[0].innerHTML += htmlContent;
         }
+        return this;
     };
     ////////////////////////////////////////////////////////////
     /***********************************************************
