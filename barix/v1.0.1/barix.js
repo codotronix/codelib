@@ -241,6 +241,25 @@ var Barix = (function () {
     };
     ////////////////////////////////////////////////////////////
     /***********************************************************
+    * .trigger (eventName: string)
+    ***********************************************************/
+    Barix.prototype.trigger = function (evName) {
+        var event = document.createEvent('HTMLEvents');
+        event.initEvent(evName, true, false);
+        for (var i in this.elems) {
+            this.elems[i].dispatchEvent(event);
+        }
+        return this;
+    };
+    ////////////////////////////////////////////////////////////
+    /***********************************************************
+    * .addFunc("funcName", Function) to extend functionality of Barix
+    ***********************************************************/
+    Barix.addFunc = function (funcName, func) {
+        Barix.prototype[funcName] = func;
+    };
+    ////////////////////////////////////////////////////////////
+    /***********************************************************
     * List to Array Converter
     ***********************************************************/
     Barix.ListToArray = function (list) {
