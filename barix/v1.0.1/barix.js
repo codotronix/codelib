@@ -16,11 +16,15 @@ var Barix = (function () {
      *********************************************************/
     Barix.select = function (selector) {
         var elems = new Array();
-        if (selector && typeof (selector) == "string") {
+        //if bx(function(){}) is used as document ready
+        if (selector && typeof (selector) == "function") {
+            window.onload = function () { selector(); };
+        }
+        else if (selector && typeof (selector) == "string") {
             var elemList = document.querySelectorAll(selector);
             elems = Barix.ListToArray(elemList);
         }
-        else if (selector instanceof Element) {
+        else if (selector && selector instanceof Element) {
             elems.push(selector);
         }
         else {
