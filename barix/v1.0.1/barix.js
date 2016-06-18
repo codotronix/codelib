@@ -46,6 +46,33 @@ var Barix = (function () {
     };
     ///////////////////////////////////////////////////////////
     /**********************************************************
+     * .remove()
+     *********************************************************/
+    Barix.prototype.remove = function () {
+        for (var i in this.elems) {
+            this.elems[i].parentNode.removeChild(this.elems[i]);
+        }
+        return this;
+    };
+    ///////////////////////////////////////////////////////////
+    /**********************************************************
+     * .find('selector')
+     *********************************************************/
+    Barix.prototype.find = function (selector) {
+        var newElems = [];
+        var tempArray;
+        for (var i in this.elems) {
+            tempArray = Barix.ListToArray(this.elems[i].querySelectorAll(selector));
+            //push all elements in newElems array
+            for (var j in tempArray) {
+                newElems.push(tempArray[j]);
+            }
+        }
+        this.elems = newElems;
+        return this;
+    };
+    ///////////////////////////////////////////////////////////
+    /**********************************************************
      * .attr('attrName', 'attrValue')
      *********************************************************/
     Barix.prototype.attr = function () {
@@ -240,7 +267,7 @@ var Barix = (function () {
     ***********************************************************/
     Barix.prototype.text = function (textContent) {
         for (var i in this.elems) {
-            this.elems[0].textContent = textContent;
+            this.elems[i].textContent = textContent;
         }
         return this;
     };
@@ -250,7 +277,7 @@ var Barix = (function () {
     ***********************************************************/
     Barix.prototype.appendText = function (textContent) {
         for (var i in this.elems) {
-            this.elems[0].textContent += textContent;
+            this.elems[i].textContent += textContent;
         }
         return this;
     };
@@ -260,7 +287,7 @@ var Barix = (function () {
     ***********************************************************/
     Barix.prototype.html = function (htmlContent) {
         for (var i in this.elems) {
-            this.elems[0].innerHTML = htmlContent;
+            this.elems[i].innerHTML = htmlContent;
         }
         return this;
     };
@@ -270,7 +297,7 @@ var Barix = (function () {
     ***********************************************************/
     Barix.prototype.append = function (htmlContent) {
         for (var i in this.elems) {
-            this.elems[0].innerHTML += htmlContent;
+            this.elems[i].innerHTML += htmlContent;
         }
         return this;
     };
