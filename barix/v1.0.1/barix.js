@@ -16,11 +16,15 @@ var Barix = (function () {
      *********************************************************/
     Barix.select = function (selector) {
         var elems = new Array();
-        if (selector && typeof (selector) == "string") {
+        //if bx(function(){}) is used as document ready
+        if (selector && typeof (selector) == "function") {
+            window.onload = function () { selector(); };
+        }
+        else if (selector && typeof (selector) == "string") {
             var elemList = document.querySelectorAll(selector);
             elems = Barix.ListToArray(elemList);
         }
-        else if (selector instanceof Element) {
+        else if (selector && selector instanceof Element) {
             elems.push(selector);
         }
         else {
@@ -234,6 +238,25 @@ var Barix = (function () {
             this.elems[0].innerHTML += htmlContent;
         }
         return this;
+    };
+    ////////////////////////////////////////////////////////////
+    /***********************************************************
+    * .trigger (eventName: string)
+    ***********************************************************/
+    Barix.prototype.trigger = function (evName) {
+        var event = document.createEvent('HTMLEvents');
+        event.initEvent(evName, true, false);
+        for (var i in this.elems) {
+            this.elems[i].dispatchEvent(event);
+        }
+        return this;
+    };
+    ////////////////////////////////////////////////////////////
+    /***********************************************************
+    * .addFunc("funcName", Function) to extend functionality of Barix
+    ***********************************************************/
+    Barix.addFunc = function (funcName, func) {
+        Barix.prototype[funcName] = func;
     };
     ////////////////////////////////////////////////////////////
     /***********************************************************
