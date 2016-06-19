@@ -3,6 +3,7 @@
  * Copyright 2016 Suman Barick
  * Licensed under the MIT license
  */
+"use strict";
 var Barix = (function () {
     /**********************************************************
      * constructor
@@ -18,7 +19,16 @@ var Barix = (function () {
         var elems = new Array();
         //if bx(function(){}) is used as document ready
         if (selector && typeof (selector) == "function") {
-            window.onload = function () { selector(); };
+            Barix.prototype["onReadyFnQueue"] = Barix.prototype["onReadyFnQueue"] || [];
+            Barix.prototype["onReadyFnQueue"].push(selector);
+            window.onload = function () {
+                //execute all the doc ready function one by one
+                for (var i in Barix.prototype["onReadyFnQueue"]) {
+                    Barix.prototype["onReadyFnQueue"][i]();
+                }
+                //once done calling all, delete them to freeup memory
+                delete Barix.prototype["onReadyFnQueue"];
+            };
         }
         else if (selector && typeof (selector) == "string") {
             var elemList = document.querySelectorAll(selector);
@@ -36,7 +46,99 @@ var Barix = (function () {
     };
     ///////////////////////////////////////////////////////////
     /**********************************************************
-     * addClass
+     * .remove()
+     *********************************************************/
+    Barix.prototype.remove = function () {
+        for (var i in this.elems) {
+            this.elems[i].parentNode.removeChild(this.elems[i]);
+        }
+        return this;
+    };
+    ///////////////////////////////////////////////////////////
+    /**********************************************************
+     * .find('selector')
+     *********************************************************/
+    Barix.prototype.find = function (selector) {
+        var newElems = [];
+        var tempArray;
+        for (var i in this.elems) {
+            tempArray = Barix.ListToArray(this.elems[i].querySelectorAll(selector));
+            //push all elements in newElems array
+            for (var j in tempArray) {
+                newElems.push(tempArray[j]);
+            }
+        }
+        this.elems = newElems;
+        return this;
+    };
+    ///////////////////////////////////////////////////////////
+    /**********************************************************
+     * .attr('attrName', 'attrValue')
+     *********************************************************/
+    Barix.prototype.attr = function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i - 0] = arguments[_i];
+        }
+        var attrJSON = {};
+        //if it is a get request
+        if (args.length == 1 && typeof (args[0]) === "string") {
+            return this.elems[0].getAttribute(args[0]);
+        }
+        //if it is set request with multiple (key, value) as JSON
+        if (args.length == 1 && typeof (args[0]) === "object") {
+            attrJSON = args[0];
+        }
+        else if (args.length == 2) {
+            attrJSON[args[0]] = args[1];
+        }
+        else {
+            var info = 'Barix: attr() method can be called in 3 ways \n 1. attr("attributeName") \n 2. attr("name", "value") \n 3. attr({"name1": "value1", "name2": "value2"....})';
+            throw info;
+        }
+        //loop thru all the elements and then all the attributes
+        for (var i in this.elems) {
+            for (var key in attrJSON) {
+                this.elems[i].setAttribute(key, attrJSON[key]);
+            }
+        }
+        return this;
+    };
+    ///////////////////////////////////////////////////////////
+    /***********************************************************
+    * .css({styleNameValuePairObject})
+    ***********************************************************/
+    Barix.prototype.css = function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i - 0] = arguments[_i];
+        }
+        var styleObj = {};
+        //if it is a get request
+        if (args.length == 1 && typeof (args[0]) === "string") {
+            return this.elems[0].style[args[0]];
+        }
+        //if style is provided as json object
+        if (args.length == 1 && typeof (args[0]) === "object") {
+            styleObj = args[0];
+        }
+        else if (args.length == 2) {
+            styleObj[args[0]] = args[1];
+        }
+        else {
+            var e = 'Barix: css style can be provided as single (name,value) pair or as a json object.';
+            throw e;
+        }
+        for (var i in this.elems) {
+            for (var key in styleObj) {
+                this.elems[i].style[key] = styleObj[key];
+            }
+        }
+        return this;
+    };
+    /////////////////////////////////////////////////////////////
+    /**********************************************************
+     * addClass("class1 class2")
      *********************************************************/
     Barix.prototype.addClass = function (classNames) {
         var classes = (classNames || "").trim();
@@ -124,36 +226,6 @@ var Barix = (function () {
     };
     ////////////////////////////////////////////////////////////
     /***********************************************************
-    * .css({styleNameValuePairObject})
-    ***********************************************************/
-    Barix.prototype.css = function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i - 0] = arguments[_i];
-        }
-        var el;
-        var styleObj;
-        if (args.length == 2) {
-            styleObj = {};
-            styleObj[args[0]] = args[1];
-        }
-        else if (args.length == 1) {
-            styleObj = args[0];
-        }
-        else {
-            var e = 'Barix: css style can be provided as single (name,value) pair or as a json object.';
-            throw e;
-        }
-        for (var i in this.elems) {
-            el = this.elems[i];
-            for (var key in styleObj) {
-                el.style[key] = styleObj[key];
-            }
-        }
-        return this;
-    };
-    /////////////////////////////////////////////////////////////
-    /***********************************************************
     * .on
     ***********************************************************/
     Barix.prototype.on = function () {
@@ -205,7 +277,7 @@ var Barix = (function () {
     ***********************************************************/
     Barix.prototype.text = function (textContent) {
         for (var i in this.elems) {
-            this.elems[0].textContent = textContent;
+            this.elems[i].textContent = textContent;
         }
         return this;
     };
@@ -215,7 +287,7 @@ var Barix = (function () {
     ***********************************************************/
     Barix.prototype.appendText = function (textContent) {
         for (var i in this.elems) {
-            this.elems[0].textContent += textContent;
+            this.elems[i].textContent += textContent;
         }
         return this;
     };
@@ -225,7 +297,7 @@ var Barix = (function () {
     ***********************************************************/
     Barix.prototype.html = function (htmlContent) {
         for (var i in this.elems) {
-            this.elems[0].innerHTML = htmlContent;
+            this.elems[i].innerHTML = htmlContent;
         }
         return this;
     };
@@ -235,7 +307,7 @@ var Barix = (function () {
     ***********************************************************/
     Barix.prototype.append = function (htmlContent) {
         for (var i in this.elems) {
-            this.elems[0].innerHTML += htmlContent;
+            this.elems[i].innerHTML += htmlContent;
         }
         return this;
     };
