@@ -80,23 +80,63 @@ var Barix = (function () {
         for (var _i = 0; _i < arguments.length; _i++) {
             args[_i - 0] = arguments[_i];
         }
-        var attrName;
-        var attrValue;
-        //if it is get
-        if (args.length == 1) {
-            attrName = args[0];
-            return this.elems[0].getAttribute(attrName);
+        var attrJSON = {};
+        //if it is a get request
+        if (args.length == 1 && typeof (args[0]) === "string") {
+            return this.elems[0].getAttribute(args[0]);
+        }
+        //if it is set request with multiple (key, value) as JSON
+        if (args.length == 1 && typeof (args[0]) === "object") {
+            attrJSON = args[0];
         }
         else if (args.length == 2) {
-            attrName = args[0];
-            attrValue = args[1];
-            for (var i in this.elems) {
-                this.elems[i].setAttribute(attrName, attrValue);
-            }
-            return this;
+            attrJSON[args[0]] = args[1];
         }
+        else {
+            var info = 'Barix: attr() method can be called in 3 ways \n 1. attr("attributeName") \n 2. attr("name", "value") \n 3. attr({"name1": "value1", "name2": "value2"....})';
+            throw info;
+        }
+        //loop thru all the elements and then all the attributes
+        for (var i in this.elems) {
+            for (var key in attrJSON) {
+                this.elems[i].setAttribute(key, attrJSON[key]);
+            }
+        }
+        return this;
     };
     ///////////////////////////////////////////////////////////
+    /***********************************************************
+    * .css({styleNameValuePairObject})
+    ***********************************************************/
+    Barix.prototype.css = function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i - 0] = arguments[_i];
+        }
+        var styleObj = {};
+        //if it is a get request
+        if (args.length == 1 && typeof (args[0]) === "string") {
+            return this.elems[0].style[args[0]];
+        }
+        //if style is provided as json object
+        if (args.length == 1 && typeof (args[0]) === "object") {
+            styleObj = args[0];
+        }
+        else if (args.length == 2) {
+            styleObj[args[0]] = args[1];
+        }
+        else {
+            var e = 'Barix: css style can be provided as single (name,value) pair or as a json object.';
+            throw e;
+        }
+        for (var i in this.elems) {
+            for (var key in styleObj) {
+                this.elems[i].style[key] = styleObj[key];
+            }
+        }
+        return this;
+    };
+    /////////////////////////////////////////////////////////////
     /**********************************************************
      * addClass("class1 class2")
      *********************************************************/
@@ -185,36 +225,6 @@ var Barix = (function () {
         return this;
     };
     ////////////////////////////////////////////////////////////
-    /***********************************************************
-    * .css({styleNameValuePairObject})
-    ***********************************************************/
-    Barix.prototype.css = function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i - 0] = arguments[_i];
-        }
-        var el;
-        var styleObj;
-        if (args.length == 2) {
-            styleObj = {};
-            styleObj[args[0]] = args[1];
-        }
-        else if (args.length == 1) {
-            styleObj = args[0];
-        }
-        else {
-            var e = 'Barix: css style can be provided as single (name,value) pair or as a json object.';
-            throw e;
-        }
-        for (var i in this.elems) {
-            el = this.elems[i];
-            for (var key in styleObj) {
-                el.style[key] = styleObj[key];
-            }
-        }
-        return this;
-    };
-    /////////////////////////////////////////////////////////////
     /***********************************************************
     * .on
     ***********************************************************/
