@@ -17,6 +17,10 @@ var Barix = (function () {
      *********************************************************/
     Barix.select = function (selector) {
         var elems = new Array();
+        //if selector is empty return the Barix class itself to make static calls easier
+        if (typeof (selector) == "undefined") {
+            return Barix;
+        }
         //if bx(function(){}) is used as document ready
         if (selector && typeof (selector) == "function") {
             Barix.prototype["onReadyFnQueue"] = Barix.prototype["onReadyFnQueue"] || [];
@@ -214,6 +218,33 @@ var Barix = (function () {
     };
     ///////////////////////////////////////////////////////////
     /**********************************************************
+     * .hide() - it saves the displayValue as attr to use in .show()
+     *********************************************************/
+    Barix.prototype.hide = function () {
+        var displayValue;
+        for (var i in this.elems) {
+            displayValue = this.elems[i].style.display;
+            if (displayValue) {
+                this.elems[i].setAttribute("barix-internal-oldDiplayVal", displayValue);
+            }
+            this.elems[i].style.display = "none";
+        }
+        return this;
+    };
+    ///////////////////////////////////////////////////////////
+    /**********************************************************
+     * .show(displayValue?)
+     *********************************************************/
+    Barix.prototype.show = function (dispVal) {
+        var displayValue;
+        for (var i in this.elems) {
+            displayValue = dispVal || this.elems[i].getAttribute("barix-internal-oldDiplayVal") || "block";
+            this.elems[i].style.display = displayValue;
+        }
+        return this;
+    };
+    ///////////////////////////////////////////////////////////
+    /**********************************************************
      * .each(callback)
      *********************************************************/
     Barix.prototype.each = function (callback) {
@@ -340,6 +371,22 @@ var Barix = (function () {
             arr.push(list[i]);
         }
         return arr;
+    };
+    ////////////////////////////////////////////////////////////
+    Barix.get = function (url, success, error) {
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function () {
+            if (xhttp.readyState == 4) {
+                if (xhttp.status == 200) {
+                    success(xhttp.responseText);
+                }
+                else if (xhttp.status == 400) {
+                    error(xhttp.responseText);
+                }
+            }
+        };
+        xhttp.open("GET", url, true);
+        xhttp.send();
     };
     return Barix;
 }());
