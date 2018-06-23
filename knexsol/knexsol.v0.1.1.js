@@ -34,7 +34,7 @@ $(function() {
         var unitList = $(this).closest('.bx-accordion').find('.acc-unit');
 
         var selectedIndex;
-        //var animateClass = 'visible animated bounceIn';
+        var animateClass = 'visible animated bounceIn';
 
         unitList.each(function(index) {
             if (!selectedIndex && $(this).hasClass('visible')) {
@@ -59,8 +59,8 @@ $(function() {
         }
 
         // Add visible to only the particular class
-        //unitList.removeClass(animateClass);
-        //unitList.eq(selectedIndex).addClass(animateClass);
+        unitList.removeClass(animateClass);
+        unitList.eq(selectedIndex).addClass(animateClass);
 
         //hide the terminal arrows
         var bxAccordion = $(this).closest('.bx-accordion');
@@ -73,9 +73,5 @@ $(function() {
     });
 
     //////////////// END OF bx-accordion ///////////////////////////////////
-
-
-
-
     
 });
